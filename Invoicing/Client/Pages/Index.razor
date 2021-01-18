@@ -1,0 +1,30 @@
+﻿@page "/"
+
+@inject HttpClient http 
+
+<h1>Your activity</h1>
+
+@if (salesRevenue == 0 && outstanding == 0)
+{
+    <h2>Chargement des données...</h2>
+}
+else
+{
+    <h2>Sales revenues : <strong>@salesRevenue €</strong></h2>
+
+    <h2>Outstanding : <strong>@outstanding €</strong></h2>
+}
+
+@code {
+
+    private decimal salesRevenue = 0;
+    private decimal outstanding = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        salesRevenue = await http.GetFromJsonAsync<decimal>("/api/dashboard/salesrevenue");
+        outstanding = await http.GetFromJsonAsync<decimal>("/api/dashboard/outstanding");
+    }
+} 
+
+

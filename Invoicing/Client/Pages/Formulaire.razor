@@ -1,0 +1,75 @@
+﻿@page "/formulaire"
+
+@inject HttpClient http
+@inject NavigationManager NavigationManager
+
+<h3>Formulaire</h3>
+
+<EditForm EditContext="@editContext" OnValidSubmit="@HandleSubmit">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <p>
+        <label>
+            Reference :
+            <InputText @bind-Value="invoice.Reference" />
+        </label>
+    </p>
+    <p>
+        <label>
+            Nom :
+            <InputText @bind-Value="invoice.Customer" />
+        </label>
+    </p>
+    <p>
+        <label>
+            Montant :
+            <InputNumber @bind-Value="invoice.Amount" />
+        </label>
+    </p>
+    <p>
+        <label>
+            Date de création :
+            <InputDate @bind-Value="invoice.Created" />
+        </label>
+    </p>
+    <button type="submit">Submit</button>
+
+</EditForm>
+
+@code {
+
+    private Invoice invoice = new Invoice();
+
+    private EditContext editContext;
+
+    protected override void OnInitialized()
+    {
+        editContext = new EditContext(invoice);
+    }
+
+    private async Task HandleSubmit()
+    {
+        var isValid = editContext.Validate();
+        //using var response = await http.PostAsJsonAsync<Invoice>("api/invoices", invoice);
+
+        if (isValid)
+        {
+            try
+            {
+                await http.PostAsJsonAsync<Invoice>("api/invoices", invoice);
+            } 
+            finally
+            {
+                NavigationManager.NavigateTo("/invoices");
+            }
+
+
+        }
+
+        /*if (!response.IsSuccessStatusCode)
+        {
+            Console.WriteLine("Message d'erreur : {0}", response.ReasonPhrase);
+        }*/
+    }
+}
